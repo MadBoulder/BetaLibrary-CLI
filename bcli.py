@@ -106,10 +106,11 @@ def create(path):
 def create_zone(path):
     """
     """
-    zone_name=input_dialog(
+    zone_name = input_dialog(
         title = 'Zone creation',
         text = "Name: ")
-    zone_path=path+SEPARATOR+DATA+ZONE+SEPARATOR + zone_name.lower().replace(" ", "_").replace("-", "_")
+    zone_path = path+DATA+ZONES+SEPARATOR + zone_name.lower().replace(" ", "_").replace("-", "_")
+    print(zone_name)
     os.mkdir(zone_path)
     # with open()
 
