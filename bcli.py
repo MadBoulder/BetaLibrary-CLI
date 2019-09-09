@@ -48,21 +48,23 @@ def load_configuration():
 
 
 def load_zones(path):
-    
+
     return [d for d in next(os.walk(path+DATA+ZONES))[1]]
+
 
 def load_sectors(zone, path):
     """
     """
     pass
 
+
 def choose_action():
     """
     """
     return button_dialog(
-        title = 'Options',
-        text = 'What do you want to do?',
-        buttons = [
+        title='Options',
+        text='What do you want to do?',
+        buttons=[
             ('Create', 0),
             ('Modify', 1),
             ('Delete', 2),
@@ -85,10 +87,10 @@ def execute_action(action, path):
 def create(path):
     """
     """
-    create_type=button_dialog(
-        title = 'Create',
-        text = 'What do you want to create?',
-        buttons = [
+    create_type = button_dialog(
+        title='Create',
+        text='What do you want to create?',
+        buttons=[
             ('Zone', 0),
             ('Sector', 1),
             ('Exit', 3)
@@ -107,9 +109,10 @@ def create_zone(path):
     """
     """
     zone_name = input_dialog(
-        title = 'Zone creation',
-        text = "Name: ")
-    zone_path = path+DATA+ZONES+SEPARATOR + zone_name.lower().replace(" ", "_").replace("-", "_")
+        title='Zone creation',
+        text="Name: ")
+    zone_path = path+DATA+ZONES+SEPARATOR + \
+        zone_name.lower().replace(" ", "_").replace("-", "_")
     print(zone_name)
     os.mkdir(zone_path)
     # with open()
@@ -118,14 +121,14 @@ def create_zone(path):
 def create_sector(path):
     """
     """
-    zones=load_zones(path)
+    zones = load_zones(path)
 
-    selected_zone=radiolist_dialog(
-        values = [
+    selected_zone = radiolist_dialog(
+        values=[
             (zone, zone) for zone in zones
         ],
-        title = 'Select Zone',
-        text = 'Please select a zone (use tab to move to confirmation buttons):')
+        title='Select Zone',
+        text='Please select a zone (use tab to move to confirmation buttons):')
 
 
 def modify(path):
@@ -137,13 +140,13 @@ def modify(path):
 def delete(path):
     """
     """
-    delete_type=button_dialog(
-        title = 'Delete',
-        text = 'What do you want to delete?',
-        buttons = [
-             ('Zone', 0),
-             ('Sector', 1),
-             ('Exit', 3)
+    delete_type = button_dialog(
+        title='Delete',
+        text='What do you want to delete?',
+        buttons=[
+            ('Zone', 0),
+            ('Sector', 1),
+            ('Exit', 3)
         ],
     )
 
@@ -154,10 +157,12 @@ def delete(path):
     if delete_type == EXIT:
         return
 
+
 def delete_zone(path):
     """
     """
     pass
+
 
 def delete_sector(path):
     """
@@ -168,7 +173,7 @@ def delete_sector(path):
 def main():
     """
     """
-    path=load_configuration()
+    path = load_configuration()
 
     if path is None:
         return
