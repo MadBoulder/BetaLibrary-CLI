@@ -1,6 +1,7 @@
 from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import message_dialog, yes_no_dialog, input_dialog, button_dialog, radiolist_dialog
 import os
+import json
 
 CONFIG_FILE = "config.txt"
 # Actions
@@ -15,6 +16,10 @@ SECTOR = 1
 DATA = '/data'
 ZONES = '/zones'
 SEPARATOR = '/'
+
+NUMERICS = ['parkings', 'sectors', 'guides']
+AUTOCOMPUTED = ['sector_data']
+TEMPLATED_ZONE_CREATION = ['name', 'parkings', 'sectors', 'guides']
 
 
 def cli_configured(config_filename):
@@ -48,7 +53,8 @@ def load_configuration():
 
 
 def load_zones(path):
-
+    """
+    """
     return [d for d in next(os.walk(path+DATA+ZONES))[1]]
 
 
@@ -56,6 +62,29 @@ def load_sectors(zone, path):
     """
     """
     pass
+
+
+def load_prefix(key):
+    """
+    """
+    if key not in NUMERICS:
+        return key
+    return 'Number of ' + key
+
+
+def try_parse(value_to_parse):
+    """
+    """
+    try:
+        return int(value_to_parse)
+    except:
+        return value_to_parse
+
+
+def autocompute_fields(data):
+    for sector in data['sectors']:
+        sector['sector_data'] = '/sectors/' + \
+            sector['name'].lower().replace(" ", "_").replace("-", "_")+'.txt'
 
 
 def choose_action():
@@ -108,13 +137,65 @@ def create(path):
 def create_zone(path):
     """
     """
-    zone_name = input_dialog(
-        title='Zone creation',
-        text="Name: ")
+
+    creation_type = button_dialog(
+        title='Create',
+        text='How do you want to create the zone?',
+        buttons=[
+            ('Full', 0),
+            ('Template', 1),
+            ('Exit', 3)
+        ],
+    )
+
+    data = {}
+    with open('zone_template.txt') as json_file:
+        data = json.load(json_file)
+
+    if creation_type == 0:
+        for data_key in data.keys():
+            if data_key in AUTOCOMPUTED:
+                continue
+            field_value = input_dialog(
+                title='Zone creation',
+                text=load_prefix(data_key)+": ")
+            if data_key in NUMERICS:
+                content_array = []
+                for i in range(int(field_value)):
+                    content = {}
+                    for sub_data_key in data[data_key][0].keys():
+                        if sub_data_key in AUTOCOMPUTED:
+                            continue
+                        value = input_dialog(
+                            title='Zone creation',
+                            text=load_prefix(sub_data_key)+" "+str(i)+": ")
+                        content[sub_data_key] = try_parse(value)
+                    content_array += [content]
+                data[data_key] = content_array
+            else:
+                data[data_key] = try_parse(field_value)
+            autocompute_fields(data)
+    elif creation_type == 1:
+        for data_key in data.keys():
+            if data_key not in TEMPLATED_ZONE_CREATION:
+                continue
+            field_value = input_dialog(
+                title='Zone creation',
+                text=load_prefix(data_key)+": ")
+            if data_key in NUMERICS:
+                content_array = []
+                for i in range(int(field_value)):
+                    content = {}
+                    for sub_data_key in data[data_key][0].keys():
+                        content[sub_data_key] = ""
+                    content_array += [content]
+                data[data_key] = content_array
+
+    print(data)
+
     zone_path = path+DATA+ZONES+SEPARATOR + \
-        zone_name.lower().replace(" ", "_").replace("-", "_")
-    print(zone_name)
-    os.mkdir(zone_path)
+        data['name'].lower().replace(" ", "_").replace("-", "_")
+    # os.mkdir(zone_path)
     # with open()
 
 
