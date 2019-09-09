@@ -15,6 +15,7 @@ SECTOR = 1
 
 DATA = '/data'
 ZONES = '/zones'
+SECTORS = '/sectors'
 SEPARATOR = '/'
 
 NUMERICS = ['parkings', 'sectors', 'guides']
@@ -190,13 +191,17 @@ def create_zone(path):
                         content[sub_data_key] = ""
                     content_array += [content]
                 data[data_key] = content_array
+            else:
+                data[data_key] = try_parse(field_value)
 
     print(data)
 
     zone_path = path+DATA+ZONES+SEPARATOR + \
         data['name'].lower().replace(" ", "_").replace("-", "_")
-    # os.mkdir(zone_path)
-    # with open()
+    os.mkdir(zone_path)
+    os.mkdir(zone_path + SECTORS)
+    with open(zone_path + SEPARATOR + data['name'].lower().replace(" ", "_").replace("-", "_")+'.txt', 'w') as f:
+        f.write(json.dumps(data, indent=4, sort_keys=True))
 
 
 def create_sector(path):
