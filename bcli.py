@@ -28,6 +28,8 @@ TEMPLATED_ZONE_CREATION = ['name', 'parkings', 'sectors', 'guides']
 
 def cli_configured(config_filename):
     """
+    Check if a config file exists. This file should
+    point to BetaLibrary's directory
     """
     if not config_filename in os.listdir():
         return False
@@ -54,6 +56,7 @@ def slugify(value, allow_unicode=False):
 
 def load_configuration():
     """
+    Load or load and configure BetaLibrary's project directory
     """
     if not cli_configured(CONFIG_FILE):
         configuration = yes_no_dialog(
@@ -75,18 +78,22 @@ def load_configuration():
 
 def load_zones(path):
     """
+    Load all bouldering zones
     """
     return [d for d in next(os.walk(path+DATA+ZONES))[1]]
 
 
 def load_sectors(zone, path):
     """
+    Load the sectors of a bouldering zone
     """
     return [d for d in next(os.walk(path+DATA+ZONES+zone+SEPARATOR+SECTORS))[1]]
 
 
 def load_prefix(key):
     """
+    Define the prefix that should be shown
+    in the dialog for the current key
     """
     if key not in NUMERICS:
         return key
@@ -95,15 +102,19 @@ def load_prefix(key):
 
 def try_parse(value_to_parse):
     """
+    Try to parse the value to a number. If this
+    fails, keep the original type 
     """
     try:
-        return int(value_to_parse)
+        return float(value_to_parse)
     except:
         return value_to_parse
 
 
 def autocompute_fields(data):
     """
+    Automatic computation of data fields from the 
+    rest of input data
     """
     for sector in data['sectors']:
         sector['sector_data'] = '/sectors/' + \
@@ -112,6 +123,7 @@ def autocompute_fields(data):
 
 def choose_action():
     """
+    Select which action to perform
     """
     return button_dialog(
         title='Options',
@@ -127,6 +139,7 @@ def choose_action():
 
 def execute_action(action, path):
     """
+    execute the selected action
     """
     if action == EXIT:
         return
@@ -223,6 +236,7 @@ def create_zone(path):
 
     print(data)
 
+    # Create zone
     zone_path = path+DATA+ZONES+SEPARATOR + \
         slugify(data['name'], False).lower()
     os.mkdir(zone_path)
@@ -242,6 +256,7 @@ def create_sector(path):
         ],
         title='Select Zone',
         text='Please select a zone (use tab to move to confirmation buttons):')
+
 
 
 def modify(path):
