@@ -1,7 +1,10 @@
 from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import message_dialog, yes_no_dialog, input_dialog, button_dialog, radiolist_dialog
+
 import os
 import json
+import re
+import unicodedata
 
 CONFIG_FILE = "config.txt"
 # Actions
@@ -29,6 +32,24 @@ def cli_configured(config_filename):
     if not config_filename in os.listdir():
         return False
     return True
+
+# From https://github.com/django/django/blob/master/django/utils/text.py
+
+
+def slugify(value, allow_unicode=False):
+    """
+    Convert to ASCII if 'allow_unicode' is False. Convert spaces to hyphens.
+    Remove characters that aren't alphanumerics, underscores, or hyphens.
+    Convert to lowercase. Also strip leading and trailing whitespace.
+    """
+    value = str(value)
+    if allow_unicode:
+        value = unicodedata.normalize('NFKC', value)
+    else:
+        value = unicodedata.normalize('NFKD', value).encode(
+            'ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
+    return re.sub(r'[-\s]+', '_', value)
 
 
 def load_configuration():
@@ -61,7 +82,7 @@ def load_zones(path):
 def load_sectors(zone, path):
     """
     """
-    pass
+    return [d for d in next(os.walk(path+DATA+ZONES+zone+SEPARATOR+SECTORS))[1]]
 
 
 def load_prefix(key):
@@ -86,7 +107,7 @@ def autocompute_fields(data):
     """
     for sector in data['sectors']:
         sector['sector_data'] = '/sectors/' + \
-            sector['name'].lower().replace(" ", "_").replace("-", "_")+'.txt'
+            slugify(sector['name'], False).lower() + '.txt'
 
 
 def choose_action():
@@ -155,7 +176,10 @@ def create_zone(path):
     with open('zone_template.txt') as json_file:
         data = json.load(json_file)
 
-    if creation_type == 0:
+    if creation_type == EXIT:
+        return
+    # Create zone with all the data
+    elif creation_type == 0:
         for data_key in data.keys():
             if data_key in AUTOCOMPUTED:
                 continue
@@ -178,6 +202,7 @@ def create_zone(path):
             else:
                 data[data_key] = try_parse(field_value)
             autocompute_fields(data)
+    # Create only zone template
     elif creation_type == 1:
         for data_key in data.keys():
             if data_key not in TEMPLATED_ZONE_CREATION:
@@ -199,10 +224,10 @@ def create_zone(path):
     print(data)
 
     zone_path = path+DATA+ZONES+SEPARATOR + \
-        data['name'].lower().replace(" ", "_").replace("-", "_")
+        slugify(data['name'], False).lower()
     os.mkdir(zone_path)
     os.mkdir(zone_path + SECTORS)
-    with open(zone_path + SEPARATOR + data['name'].lower().replace(" ", "_").replace("-", "_")+'.txt', 'w') as f:
+    with open(zone_path + SEPARATOR + slugify(data['name'], False).lower()+'.txt', 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
 
 
@@ -262,7 +287,6 @@ def main():
     """
     """
     path = load_configuration()
-
     if path is None:
         return
 
