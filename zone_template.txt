@@ -1,0 +1,26 @@
+{
+    "name":"",
+    "latitude":"",
+    "longitude":"",
+    "zoom":"",
+    "parkings": [
+        {
+	    	"parking_latitude":"",
+	    	"parking_longitude":""
+        }
+    ],
+    "sectors": [
+        {
+            "name":"",
+            "sector_data":"",
+            "link":""
+        }
+    ],
+    "guides":[
+        {
+            "name":"",
+            "link":""
+        }
+    ],
+    "playlist":""
+}

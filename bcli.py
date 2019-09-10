@@ -9,15 +9,15 @@ CREATE = 0
 MODIFY = 1
 DELETE = 2
 EXIT = 3
-#
+# Object sppecification
 ZONE = 0
 SECTOR = 1
-
+# Betalibrary's path specifications
 DATA = '/data'
 ZONES = '/zones'
 SECTORS = '/sectors'
 SEPARATOR = '/'
-
+# Special fields
 NUMERICS = ['parkings', 'sectors', 'guides']
 AUTOCOMPUTED = ['sector_data']
 TEMPLATED_ZONE_CREATION = ['name', 'parkings', 'sectors', 'guides']
@@ -34,7 +34,6 @@ def cli_configured(config_filename):
 def load_configuration():
     """
     """
-
     if not cli_configured(CONFIG_FILE):
         configuration = yes_no_dialog(
             title='Configuration',
@@ -83,6 +82,8 @@ def try_parse(value_to_parse):
 
 
 def autocompute_fields(data):
+    """
+    """
     for sector in data['sectors']:
         sector['sector_data'] = '/sectors/' + \
             sector['name'].lower().replace(" ", "_").replace("-", "_")+'.txt'
@@ -104,6 +105,8 @@ def choose_action():
 
 
 def execute_action(action, path):
+    """
+    """
     if action == EXIT:
         return
     if action == CREATE:
@@ -138,7 +141,6 @@ def create(path):
 def create_zone(path):
     """
     """
-
     creation_type = button_dialog(
         title='Create',
         text='How do you want to create the zone?',
