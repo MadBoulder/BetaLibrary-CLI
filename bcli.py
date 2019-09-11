@@ -103,7 +103,7 @@ def load_prefix(key):
 def try_parse(value_to_parse):
     """
     Try to parse the value to a number. If this
-    fails, keep the original type 
+    fails, keep the original type
     """
     try:
         return float(value_to_parse)
@@ -113,7 +113,7 @@ def try_parse(value_to_parse):
 
 def autocompute_fields(data):
     """
-    Automatic computation of data fields from the 
+    Automatic computation of data fields from the
     rest of input data
     """
     for sector in data['sectors']:
@@ -241,9 +241,29 @@ def create_zone(path):
         slugify(data['name'], False).lower()
     os.mkdir(zone_path)
     os.mkdir(zone_path + SECTORS)
+    # Load sector template
+    sector_data = {}
+    with open('sector_template.txt') as json_file:
+        sector_data = json.load(json_file)
+    # Add sectors
+    for num, sector in enumerate(data['sectors']):
+        # if a sector data file name has been provided, create the file
+        if sector['sector_data']:
+            with open(zone_path + slugify(sector['sector_data'], False), 'w') as f:
+                f.write(json.dumps(sector_data, indent=4, sort_keys=True))
+        elif sector['name']:
+            sector['sector_data'] = SECTORS + SEPARATOR + \
+                slugify(sector['name'], False)+'.txt'
+            with open(zone_path + slugify(sector['sector_data'], False), 'w') as f:
+                f.write(json.dumps(sector_data, indent=4, sort_keys=True))
+        else:
+            sector['sector_data'] = SECTORS + \
+                SEPARATOR + 'sector_' + str(num) + '.txt'
+            with open(zone_path + sector['sector_data'], 'w') as f:
+                f.write(json.dumps(sector_data, indent=4, sort_keys=True))
+    # Add zone data
     with open(zone_path + SEPARATOR + slugify(data['name'], False).lower()+'.txt', 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
-
 
 def create_sector(path):
     """
@@ -256,7 +276,6 @@ def create_sector(path):
         ],
         title='Select Zone',
         text='Please select a zone (use tab to move to confirmation buttons):')
-
 
 
 def modify(path):
