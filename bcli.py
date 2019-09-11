@@ -139,7 +139,7 @@ def choose_action():
 
 def execute_action(action, path):
     """
-    execute the selected action
+    Execute the selected action
     """
     if action == EXIT:
         return
@@ -153,6 +153,7 @@ def execute_action(action, path):
 
 def create(path):
     """
+    Create action
     """
     create_type = button_dialog(
         title='Create',
@@ -265,6 +266,7 @@ def create_zone(path):
     with open(zone_path + SEPARATOR + slugify(data['name'], False).lower()+'.txt', 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
 
+
 def create_sector(path):
     """
     """
@@ -280,12 +282,14 @@ def create_sector(path):
 
 def modify(path):
     """
+    Modify action
     """
     pass
 
 
 def delete(path):
     """
+    Delete action
     """
     delete_type = button_dialog(
         title='Delete',
@@ -307,18 +311,22 @@ def delete(path):
 
 def delete_zone(path):
     """
+    Deletes a zone
     """
     pass
 
 
 def delete_sector(path):
     """
+    Delectes a sector from a zone
     """
     pass
 
 
 def main():
     """
+    Main entry point of the cli. Loads project path
+    and asks user for an action
     """
     path = load_configuration()
     if path is None:
