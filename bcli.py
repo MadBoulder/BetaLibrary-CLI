@@ -313,7 +313,14 @@ def delete_zone(path):
     """
     Deletes a zone
     """
-    pass
+    zones = load_zones(path)
+
+    selected_zone = radiolist_dialog(
+        values=[
+            (zone, zone) for zone in zones
+        ],
+        title='Select Zone',
+        text='Please select a zone to delete (use tab to move to confirmation buttons):')
 
 
 def delete_sector(path):
