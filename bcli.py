@@ -68,11 +68,11 @@ def load_configuration():
             text="Please enter BetaLibrary's path: ")
 
         if text:
-            with open("config.txt", 'w') as f:
+            with open("config.txt", 'w', encoding='utf-8') as f:
                 f.write(text)
             return text
     else:
-        with open("config.txt", 'r') as f:
+        with open("config.txt", 'r', encoding='utf-8') as f:
             return f.read()
 
 
@@ -187,7 +187,7 @@ def create_zone(path):
     )
 
     data = {}
-    with open('zone_template.txt') as json_file:
+    with open('zone_template.txt', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     if creation_type == EXIT:
@@ -244,26 +244,26 @@ def create_zone(path):
     os.mkdir(zone_path + SECTORS)
     # Load sector template
     sector_data = {}
-    with open('sector_template.txt') as json_file:
+    with open('sector_template.txt', encoding='utf-8') as json_file:
         sector_data = json.load(json_file)
     # Add sectors
     for num, sector in enumerate(data['sectors']):
         # if a sector data file name has been provided, create the file
         if sector['sector_data']:
-            with open(zone_path + slugify(sector['sector_data'], False), 'w') as f:
+            with open(zone_path + slugify(sector['sector_data'], False), 'w', encoding='utf-8') as f:
                 f.write(json.dumps(sector_data, indent=4, sort_keys=True))
         elif sector['name']:
             sector['sector_data'] = SECTORS + SEPARATOR + \
                 slugify(sector['name'], False)+'.txt'
-            with open(zone_path + slugify(sector['sector_data'], False), 'w') as f:
+            with open(zone_path + slugify(sector['sector_data'], False), 'w', encoding='utf-8') as f:
                 f.write(json.dumps(sector_data, indent=4, sort_keys=True))
         else:
             sector['sector_data'] = SECTORS + \
                 SEPARATOR + 'sector_' + str(num) + '.txt'
-            with open(zone_path + sector['sector_data'], 'w') as f:
+            with open(zone_path + sector['sector_data'], 'w', encoding='utf-8') as f:
                 f.write(json.dumps(sector_data, indent=4, sort_keys=True))
     # Add zone data
-    with open(zone_path + SEPARATOR + slugify(data['name'], False).lower()+'.txt', 'w') as f:
+    with open(zone_path + SEPARATOR + slugify(data['name'], False).lower()+'.txt', 'w', encoding='utf-8') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
 
 
