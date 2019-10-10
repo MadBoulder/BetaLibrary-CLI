@@ -35,14 +35,14 @@ def cli_configured(config_filename):
         return False
     return True
 
-# From https://github.com/django/django/blob/master/django/utils/text.py
-
 
 def slugify(value, allow_unicode=False):
     """
     Convert to ASCII if 'allow_unicode' is False. Convert spaces to hyphens.
     Remove characters that aren't alphanumerics, underscores, or hyphens.
     Convert to lowercase. Also strip leading and trailing whitespace.
+
+    Source: https://github.com/django/django/blob/master/django/utils/text.py
     """
     value = str(value)
     if allow_unicode:
@@ -87,7 +87,7 @@ def load_sectors(zone, path):
     """
     Load the sectors of a bouldering zone
     """
-    return [d for d in next(os.walk(path+DATA+ZONES+zone+SEPARATOR+SECTORS))[1]]
+    return [d for d in next(os.walk(path+DATA+ZONES+SEPARATOR+zone+SECTORS))[2]]
 
 
 def load_prefix(key):
@@ -175,6 +175,7 @@ def create(path):
 
 def create_zone(path):
     """
+    Create a new zone
     """
     creation_type = button_dialog(
         title='Create',
@@ -269,6 +270,7 @@ def create_zone(path):
 
 def create_sector(path):
     """
+    Create a new sector
     """
     zones = load_zones(path)
 
@@ -313,14 +315,52 @@ def delete_zone(path):
     """
     Deletes a zone
     """
-    pass
+    zones = load_zones(path)
+
+    selected_zone = radiolist_dialog(
+        values=[
+            (zone, zone) for zone in zones
+        ],
+        title='Select Zone',
+        text='Please select a zone to delete (use tab to move to confirmation buttons):')
 
 
 def delete_sector(path):
     """
     Delectes a sector from a zone
     """
-    pass
+    zones = load_zones(path)
+
+    selected_zone = radiolist_dialog(
+        values=[
+            (zone, zone) for zone in zones
+        ],
+        title='Select Zone',
+        text='Please select a zone (use tab to move to confirmation buttons):')
+    sectors = load_sectors(selected_zone, path)
+
+    selected_sector = radiolist_dialog(
+        # Remove extension by slicing
+        values=[
+            (sector, sector[:-4]) for sector in sectors
+        ],
+        title='Select Sector',
+        text='Please select a sector to delete (use tab to move to confirmation buttons):')
+
+    # TODO: Replace by n easier selector dialog
+    sure = radiolist_dialog(
+        values=[
+            (True, "Yes"),
+            (False, "No")
+        ],
+        title='Select Sector',
+        text='Are you sure you want to delete '+selected_sector[:-4]+' from '+selected_zone+'?')
+
+    if sure:
+        os.remove(path+DATA+ZONES+SEPARATOR+selected_zone+SECTORS+SEPARATOR+selected_sector)
+
+    
+    
 
 
 def main():
