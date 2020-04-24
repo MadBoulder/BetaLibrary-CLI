@@ -329,7 +329,7 @@ def delete_sector(path):
         title='Select Sector',
         text='Please select a sector to delete (use tab to move to confirmation buttons):')
 
-    # TODO: Replace by n easier selector dialog
+    # TODO: Replace by an easier selector dialog
     sure = radiolist_dialog(
         values=[
             (True, "Yes"),
