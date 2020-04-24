@@ -163,8 +163,8 @@ def create_zone(path):
         title='Create',
         text='How do you want to create the zone?',
         buttons=[
-            ('Full', 0),
-            ('Template', 1),
+            ('Empty template (only structure)', 0),
+            ('Structure and data', 1),
             ('Exit', 3)
         ],
     )
@@ -176,7 +176,7 @@ def create_zone(path):
     if creation_type == EXIT:
         return
     # Create zone with all the data
-    elif creation_type == 0:
+    elif creation_type == 1:
         for data_key in data.keys():
             if data_key in AUTOCOMPUTED:
                 continue
@@ -200,7 +200,7 @@ def create_zone(path):
                 data[data_key] = try_parse(field_value)
             autocompute_fields(data)
     # Create only zone template
-    elif creation_type == 1:
+    elif creation_type == 0:
         for data_key in data.keys():
             if data_key not in TEMPLATED_ZONE_CREATION:
                 continue
@@ -261,7 +261,7 @@ def create_sector(path):
             (zone, zone) for zone in zones
         ],
         title='Select Zone',
-        text='Please select a zone (use tab to move to confirmation buttons):')
+        text='Please select a zone (use enter to select tab to move to confirmation buttons):')
 
 
 def modify(path):
@@ -340,9 +340,6 @@ def delete_sector(path):
 
     if sure:
         os.remove(path+DATA+ZONES+SEPARATOR+selected_zone+SECTORS+SEPARATOR+selected_sector)
-
-    
-    
 
 
 def main():
