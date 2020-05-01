@@ -183,6 +183,8 @@ def create_zone(path):
             field_value = input_dialog(
                 title='Zone creation',
                 text=load_prefix(data_key)+": ")
+            if field_value is None:
+                return None
             if data_key in NUMERICS:
                 content_array = []
                 for i in range(int(field_value)):
@@ -261,7 +263,60 @@ def create_sector(path):
             (zone, zone) for zone in zones
         ],
         title='Select Zone',
-        text='Please select a zone (use enter to select tab to move to confirmation buttons):')
+        text='Please select a zone (use enter to select and tab to move to confirmation buttons):')
+    
+    zone_path = path+DATA+ZONES+SEPARATOR+selected_zone
+
+    creation_type = button_dialog(
+        title='Create Sector',
+        text='How do you want to create the sector?',
+        buttons=[
+            ('Empty template (only structure)', 0),
+            ('Structure and data', 1),
+            ('Exit', 3)
+        ],
+    )
+
+    # Load sector template
+    sector_data = {}
+    with open('sector_template.txt', encoding='utf-8') as json_file:
+        sector_data = json.load(json_file)
+
+    # only template
+    if creation_type == 0:
+        # ask for sector name
+        sector_name = input_dialog(
+            title='Sector creation',
+            text="Sector Name: ")
+        if sector_name is None:
+            return None
+        else:
+            # create sector txt
+            with open(
+                zone_path + SEPARATOR + "sectors" + SEPARATOR + slugify(sector_name, False) + '.txt',
+                'w', encoding='utf-8'
+            ) as f:
+                f.write(json.dumps(sector_data, indent=4, sort_keys=True))
+            # add sector in zone txt
+            # its fields are:
+            # {
+            #   "name":"Sector El Anfibio",
+            #   "sector_data":"/sectors/el_anfibio.txt",
+            #   "link":"https://www.youtube.com/playlist?list=PLlwn5IhJiUnPbYvXtpKcRXimqFxnfB9y-"
+            # },
+            # inside the sectors key
+            zone_data = {}
+            with open(zone_path + SEPARATOR + selected_zone + '.txt', encoding='utf-8') as json_file:
+                zone_data = json.load(json_file)
+                zone_data['sectors'].append(
+                    {
+                        'name': sector_name,
+                        'sector_data':'/sectors/'+slugify(sector_name, False)+'.txt',
+                        'link': ''
+                    }
+                )
+            with open(zone_path + SEPARATOR + selected_zone + '.txt', 'w', encoding='utf-8') as f:
+                f.write(json.dumps(zone_data, indent=4, sort_keys=True))
 
 
 def modify(path):
