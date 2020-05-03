@@ -12,7 +12,9 @@ Command line interface for modifying or updating Betalibrary's internal data
 Currently, the tool supports:
 
 1. Creating the empty template (only adds structure - folders and files) for a new zone.
-2. Deleting a sector.
+2. Creating a new zone and poviding its data.
+3. Add a new sector to a zone (only the template).
+4. Delete a sector from a zone.
 
 ## Future work:
 
